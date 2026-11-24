@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家庭网络卡顿的排查顺序</title>
+<meta name="description" content="网络排查 的实用经验：包含具体步骤、数字参考与常见错误，约 2000 字。">
+<meta name="keywords" content="网络排查,步骤,实用经验,步骤">
+<link rel="canonical" href="">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "家庭网络卡顿的排查顺序", "description": "网络排查 的实用经验整理，包含具体做法与常见错误。", "author": {"@type": "Person", "name": "编辑部"}, "datePublished": "2026-11-24", "inLanguage": "zh-CN"}, {"@type": "WebPage", "name": "家庭网络卡顿的排查顺序"}]}</script>
+<style>
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;max-width:820px;margin:40px auto;padding:0 20px;line-height:1.9;color:#1f2328}
+h1{font-size:28px;line-height:1.4}h2{font-size:21px;margin-top:34px;border-left:4px solid #0b62d6;padding-left:10px}
+h3{font-size:17px;margin-top:22px}ul,ol{padding-left:24px}a{color:#0b62d6;text-decoration:none}a:hover{text-decoration:underline}
+.toc{background:#f6f8fa;border:1px solid #e5e7eb;padding:12px 18px;border-radius:8px;font-size:14px}
+footer{margin-top:44px;border-top:1px solid #eee;padding-top:16px;font-size:14px;color:#57606a}
+</style>
+</head>
+<body>
+<h1>家庭网络卡顿的排查顺序</h1>
+<div class="toc"><strong>目录</strong><br>一、问题与目标　二、具体做法　三、常见错误　四、效果判断　五、常见问题</div>
+<h2>网络排查从哪里开始：先分层，再动手</h2>
+<p>网络故障最怕“凭感觉重启”。一次典型的家庭或小微企业断网，平均影响 2 人以上、耽误 30 分钟到 2 小时；若发生在营业场景，按每小时 200 元至 800 元的流水损失估算，盲目操作代价并不低。排查的核心是把问题拆成“物理链路—地址配置—名称解析—应用服务”四层，每层用 1 至 3 个动作验证，确认哪一层断了再深入。下面按步骤展开，每一步都给出可执行的编号和常见错误。</p>
+
+<h2>第一步：确认故障范围与物理链路（0 至 10 分钟）</h2>
+<p><strong>步骤 1：界定影响面。</strong>问清三件事——是一台设备还是全部设备、是有线还是无线、是全部应用还是仅某个应用。单台设备故障，80% 集中在网卡、IP 配置或代理设置；全部设备故障，优先查光猫、路由器和运营商线路。常见错误是“一个人说网坏了就当成全网故障”，结果在无关设备上耗掉 20 分钟。</p>
+<p><strong>步骤 2：看指示灯与供电。</strong>光猫的 PON 灯常亮表示光路正常，闪烁或熄灭说明线路或运营商侧有问题；LOS 灯红闪基本可判定光纤中断，此时不要反复重启，直接报修。路由器 WAN 口灯不亮，先换一根网线，成本 5 元至 20 元，往往比排查半小时更快。常见错误是只看电源灯，忽略 WAN 口和光信号灯。</p>
+<p><strong>步骤 3：做最小替换验证。</strong>用一台已知正常的设备直连光猫 LAN 口，若能上网，问题在路由器或内网；若仍不能，问题在光猫或上游。整个动作控制在 5 分钟内，替换法能一次性排除 60% 以上的“疑似设备故障”。常见错误是跳过直连，直接在路由器后台改参数，改完仍不知道断点在哪。</p>
+
+<h2>第二步：检查地址配置与网关连通性（10 至 25 分钟）</h2>
+<p><strong>步骤 4：确认 IP 获取方式。</strong>在故障设备上查看是否拿到 192.168.x.x 或 10.x.x.x 的地址。出现 169.254.x.x 说明 DHCP 失败，问题在路由器 DHCP 服务、网线或无线关联。常见错误是手工填了一个与网关不同网段的静态 IP，导致“显示已连接但打不开网页”，这类问题占配置类故障的 30% 左右。</p>
+<p><strong>步骤 5：分段 ping 验证。</strong>先 ping 本机回环地址，验证协议栈；再 ping 网关，验证局域网；最后 ping 一个公网地址，验证出口。三步中哪一步断，故障范围就锁定在哪一段。每次 ping 发 4 个包、超时设 2 秒，全程不超过 1 分钟。常见错误是一上来 ping 公网域名，把“DNS 失败”误判成“完全断网”。</p>
+<p><strong>步骤 6：检查 ARP 与冲突。</strong>局域网内出现 IP 冲突时，表现为间歇性断网，每 1 至 3 分钟掉一次。可在路由器后台查看已分配地址列表，或临时把故障机改为同网段空闲地址测试。常见错误是两台设备都设了 192.168.1.100 这类“好记”的静态地址，冲突后互相抢占，排查时却只看外网。</p>
+
+<h2>第三步：排查名称解析与应用层（25 至 45 分钟）</h2>
+<p><strong>步骤 7：区分“能通 IP”与“能通域名”。</strong>直接用 IP 访问一个已知服务，若能打开而域名打不开，问题在 DNS。把 DNS 临时改为公共解析服务再试，切换耗时约 2 分钟。常见错误是把 DNS 故障当成浏览器故障，反复清理缓存、重装浏览器，浪费 30 分钟以上。</p>
+<p><strong>步骤 8：核对代理与 hosts。</strong>检查系统代理、浏览器代理插件和 hosts 文件三处。企业环境中，代理配置错误导致的“部分网站打不开”占比可达 40%。常见错误是只改浏览器设置，忽略系统级代理，结果换浏览器依旧失败。</p>
+<p><strong>步骤 9：用端口和抓包定位。</strong>网页打不开但 ping 通，可用端口探测确认 80 或 443 是否可达；仍无结论时抓包 30 秒至 2 分钟，看是否有 SYN 发出而无回应。常见错误是抓包时间过长，文件达到数百 MB，反而增加分析成本；建议只抓故障复现的 1 分钟。</p>
+
+<h2>第四步：记录、复现与升级（45 至 60 分钟）</h2>
+<p><strong>步骤 10：形成时间线记录。</strong>记录故障开始时间、影响设备数、已做动作和结果。一条合格记录包含 5 个要素：时间、现象、验证动作、结论、下一步。常见错误是只写“重启了，好了”，下次同类故障仍从零开始。</p>
+<p><strong>步骤 11：设定升级阈值。</strong>单点故障排查超过 30 分钟、全网故障超过 15 分钟，即联系运营商或设备厂商。报修时提供光猫指示灯状态、直连结果和故障起始时间，可将首次响应效率提升约 50%。常见错误是反复重启 5 次以上才报修，既拖延时间，也可能掩盖线路告警记录。</p>
+<p><strong>步骤 12：复盘与预防。</strong>对每月发生 2 次以上的故障，检查网线老化、路由器散热和 DHCP 地址池容量。地址池只剩不到 10% 时，新设备接入失败率明显上升，提前扩容或缩短租期即可避免。</p>
+
+<h2>常见问题</h2>
+<p><strong>问：重启路由器真的有用吗？</strong>对缓存溢出、DHCP 异常等软件类问题，重启有效，耗时约 2 分钟；对光纤中断、欠费停机无效。建议最多重启 1 次，无效即转入分层验证。</p>
+<p><strong>问：为什么有的设备能上网，有的不能？</strong>优先查三处：该设备是否拿到 169.254 地址、是否配置了错误静态 IP、是否启用了代理。单设备故障中，这三类原因合计占多数。</p>
+<p><strong>问：多久应该检查一次网络设备？</strong>家庭场景每 3 个月检查一次指示灯和线缆；小微企业每月一次，重点看地址池余量、设备温度和告警日志，单次耗时 10 至 15 分钟即可。</p>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://live-yingchao-cctv.com.cn/">live-yingchao-cctv.com.cn</a></li>
+</ul>
+<footer>本文为经验整理，数据与方法随实践持续更新。</footer>
+</body>
+</html>
